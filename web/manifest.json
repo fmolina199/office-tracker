@@ -1,6 +1,6 @@
 {
-    "name": "office_tracking",
-    "short_name": "office_tracking",
+    "name": "office_tracker",
+    "short_name": "office_tracker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

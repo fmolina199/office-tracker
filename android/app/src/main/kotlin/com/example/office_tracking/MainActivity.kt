@@ -1,4 +1,4 @@
-package com.example.office_tracking
+package com.workday.office_tracker
 
 import io.flutter.embedding.android.FlutterActivity
 

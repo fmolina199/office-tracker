@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import 'package:office_tracking/location_service.dart';
+import 'package:office_tracker/services/location_service.dart';
 
 void main() {
   runApp(const MyApp());
