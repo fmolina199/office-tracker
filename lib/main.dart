@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:office_tracker/services/location_service.dart';
+import 'package:office_tracker/utils/logging_util.dart';
 
 void main() {
+  LoggingUtil.configure();
   runApp(const MyApp());
 }
 
@@ -56,6 +58,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _log = LoggingUtil('_MyHomePageState');
   int _counter = 0;
   LocationData? _currentLocation;
 
