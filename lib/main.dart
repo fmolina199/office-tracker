@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
 import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 
@@ -60,10 +59,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _log = LoggingUtil('_MyHomePageState');
   int _counter = 0;
-  LocationData? _currentLocation;
+  GeoPosition? _currentLocation;
 
 
   Future<void> _incrementCounter() async {
+    _log.info('Calling _incrementCounter');
     final location = await LocationService.instance;
     final newLocation = await location.getLocation();
     setState(() {
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               (_currentLocation == null)
                   ? '$_counter'
-                  : 'Location: ${_currentLocation!.latitude}, ${_currentLocation!.longitude}',
+                  : 'Location: $_currentLocation',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],

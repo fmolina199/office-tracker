@@ -38,6 +38,10 @@ class LoggingUtil {
     _logger?.d(message);
   }
 
+  void error(String message) {
+    _logger?.e(message);
+  }
+
   void info(String message) {
     _logger?.i(message);
   }
