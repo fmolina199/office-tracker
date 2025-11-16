@@ -1,7 +1,9 @@
 import 'package:office_tracker/widgets/tracker_history/model/month_history.dart';
 
-class TrackerHistory {
+class TrackerHistory<T> {
   final Map<int, MonthHistory> _history = {};
+
+  TrackerHistory();
 
   bool isPresent(DateTime date) {
     final year = date.year;
@@ -12,14 +14,14 @@ class TrackerHistory {
         && _history[year]!.isPresent(month, day);
   }
 
-  void add(DateTime date) {
+  void add(DateTime date, T data) {
     final year = date.year;
 
     if (!_history.containsKey(year)) {
-      _history[year] = MonthHistory();
+      _history[year] = MonthHistory<T>();
     }
 
-    _history[year]!.add(date);
+    _history[year]!.add(date, data);
   }
 
   void remove(DateTime date) {

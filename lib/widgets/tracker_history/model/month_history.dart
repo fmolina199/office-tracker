@@ -1,6 +1,6 @@
 import 'package:office_tracker/widgets/tracker_history/model/day_history.dart';
 
-class MonthHistory {
+class MonthHistory<T> {
   final Map<int, DayHistory> _history = {};
 
   bool isPresent(int month, int day) {
@@ -8,14 +8,14 @@ class MonthHistory {
       && _history[month]!.isPresent(day);
   }
 
-  void add(DateTime date) {
+  void add(DateTime date, T data) {
     final month = date.month;
 
     if (!_history.containsKey(month)) {
-      _history[month] = DayHistory();
+      _history[month] = DayHistory<T>();
     }
 
-    _history[month]!.add(date);
+    _history[month]!.add(date, data);
   }
 
   void remove(DateTime date) {
