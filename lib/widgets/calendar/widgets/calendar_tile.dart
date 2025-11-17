@@ -33,7 +33,7 @@ class CalendarTile extends StatelessWidget {
               Text(
                 text,
                 style: TextStyle(
-                  fontSize: (isToday) ? 22 : 20,
+                  fontSize: (isToday) ? 12 : 10,
                   fontWeight: FontWeight.bold,
                   fontStyle: (isToday) ? FontStyle.italic : null,
                   decoration: (isToday) ? TextDecoration.underline : null,

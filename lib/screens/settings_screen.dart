@@ -42,6 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 initialSelection: calendarFirstWeekDay,
                 menuEntries: weekDays
             ),
+            //TODO add option to select which days of the week someone is off (default to sat and sun)
           ],
         ),
       ),

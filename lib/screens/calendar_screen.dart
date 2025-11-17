@@ -1,7 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:office_tracker/constants/colors.dart';
 import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
+import 'package:office_tracker/widgets/calendar/widgets/week_days_row.dart';
 import 'package:office_tracker/widgets/calendar/widgets/calendar_tile.dart';
+
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -22,6 +27,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
         padding: const EdgeInsets.symmetric(vertical: formHorizontalPadding),
         child: Column(
           children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back_ios_new_outlined, size: 20,),
+                  onPressed: () {},
+                ),
+                Expanded(child: Center(child: Text('September 2023', style: TextStyle(fontSize: 18),),)),
+                IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_outlined, size: 20,),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(child: Container(height: formHorizontalPadding)),
+              ],
+            ),
+            WeekDaysRow(firstWeekDay: 1),
             Expanded(
               child: Row(
                 children: [
