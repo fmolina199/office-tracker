@@ -20,30 +20,28 @@ class DayHistory<T> {
     return _history.length;
   }
 
-  // TODO HERE convert for a generic value so we can store different data
-  List<String> toJson() {
-    final List<String> days = [];
-    for (var value in _history.values) {
-      //TODO add day and also data
-      if (T is DateTime) {
-        days.add(_dateFormat.format(value as DateTime));
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> days = {};
+    _history.forEach((key, value) {
+      if (T == DateTime) {
+        days['$key'] = _dateFormat.format(value as DateTime);
       } else {
-        days.add('$value');
+        days['$key'] = '$value';
       }
-    }
+    });
     return days;
   }
 
-  static DayHistory fromJson<T>(List<String> days) {
+  static DayHistory fromJson<T>(Map<String, dynamic> days) {
     final dayHistory = DayHistory<T>();
-    for (var day in days) {
-      //TODO convert from day and data
-      if (T is DateTime) {
-        dayHistory.add(DateTime.now(), _dateFormat.parse(day) as T);
+    days.forEach((key, value) {
+      final day = int.parse(key);
+      if (T == DateTime) {
+        dayHistory._history[day] = _dateFormat.parse(value) as T;
       } else {
-        dayHistory.add(DateTime.now(), day as T);
+        dayHistory._history[day] = value as T;
       }
-    }
+    });
     return dayHistory;
   }
 }

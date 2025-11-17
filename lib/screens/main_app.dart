@@ -13,7 +13,7 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: mainColor),
       ),
-      home: const HomeScreen(title: 'Office Tracker'),
+      home: const HomeScreen(),
     );
   }
 }

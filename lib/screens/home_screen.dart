@@ -5,9 +5,7 @@ import 'package:office_tracker/screens/settings_screen.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String title;
-
-  const HomeScreen({super.key, required this.title});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -15,6 +13,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static final _log = LoggingUtil('_HomeScreenState');
+  
+  static final _titles = [
+    'Calendar',
+    'Reports',
+    'Settings',
+  ];
 
   final List<Widget> _widgets = <Widget>[
     CalendarScreen(),
@@ -30,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(_titles.elementAt(_selectedIndex)),
       ),
       body: Center(
         child: _widgets.elementAt(_selectedIndex),
