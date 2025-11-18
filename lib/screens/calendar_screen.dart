@@ -1,21 +1,81 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import 'package:office_tracker/constants/colors.dart';
 import 'package:office_tracker/constants/sizes.dart';
-import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
-import 'package:office_tracker/widgets/calendar/widgets/week_days_row.dart';
-import 'package:office_tracker/widgets/calendar/widgets/calendar_tile.dart';
+import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/widgets/calendar/constants/sizes.dart';
+import 'package:office_tracker/widgets/calendar/widgets/calendar_head.dart';
+import 'package:office_tracker/widgets/calendar/widgets/calendar_row.dart';
+import 'package:office_tracker/widgets/calendar/widgets/weekdays_row.dart';
+import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dart';
 
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  final Settings settings;
+  final TrackerHistory<DateTime> presenceHistory;
+  final TrackerHistory<DateTime>? holidayHistory;
+
+
+  const CalendarScreen({
+    super.key,
+    required this.settings,
+    required this.presenceHistory,
+    this.holidayHistory,
+  });
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  static DateTime getCurrentMonthDate() {
+    final date = DateTime.now();
+    return DateTime(
+        date.year,
+        date.month,
+        1,
+        12, // Setting time to noon is required for summer time transition
+    );
+  }
+
+  static DateTime getFirstDayInCalendar(DateTime date, int firstWeekday) {
+    while(date.weekday != firstWeekday) {
+      date = date.subtract(oneDayDuration);
+    }
+    return date;
+  }
+
+  DateTime _selectedMonth = getCurrentMonthDate();
+  DateTime _firstDayCalendar = getCurrentMonthDate();
+
+  void setNewSelectedMonth(DateTime date) {
+    setState(() {
+      _selectedMonth = date;
+      _firstDayCalendar = getFirstDayInCalendar(
+          date,
+          widget.settings.firstWeekday
+      );
+    });
+  }
+
+  void subtractOneMonth() {
+    final date = DateTime(
+      _selectedMonth.year,
+      _selectedMonth.month-1,
+      1,
+      12, // Setting time to noon is required for summer time transition
+    );
+    setNewSelectedMonth(date);
+  }
+
+  void addOneMonth() {
+    final date = DateTime(
+      _selectedMonth.year,
+      _selectedMonth.month+1,
+      1,
+      12, // Setting time to noon is required for summer time transition
+    );
+    setNewSelectedMonth(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
@@ -27,93 +87,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
         padding: const EdgeInsets.symmetric(vertical: formHorizontalPadding),
         child: Column(
           children: [
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back_ios_new_outlined, size: 20,),
-                  onPressed: () {},
-                ),
-                Expanded(child: Center(child: Text('September 2023', style: TextStyle(fontSize: 18),),)),
-                IconButton(
-                  icon: Icon(Icons.arrow_forward_ios_outlined, size: 20,),
-                  onPressed: () {},
-                ),
-              ],
+            CalendarHead(
+              date: _selectedMonth,
+              onClickLeftArrow: subtractOneMonth,
+              onClickRightArrow:  addOneMonth,
             ),
             Row(
               children: [
                 Expanded(child: Container(height: formHorizontalPadding)),
               ],
             ),
-            WeekDaysRow(firstWeekDay: 1),
-            Expanded(
-              child: Row(
-                children: [
-                  CalendarTile(text: '1', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '2', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '3', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '4', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '5', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '6', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '7', presenceStatus: PresenceEnum.present),
-                ],
-              ),
+            WeekdaysRow(firstWeekday: widget.settings.firstWeekday),
+            CalendarRow(
+              date: _firstDayCalendar,
+              presenceHistory: widget.presenceHistory,
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  CalendarTile(text: '8', presenceStatus: PresenceEnum.dayOff),
-                  CalendarTile(text: '9', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '10', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '11', presenceStatus: PresenceEnum.dayOff),
-                  CalendarTile(text: '12', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '13', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '14', presenceStatus: PresenceEnum.present),
-                ],
-              ),
+            CalendarRow(
+                date: _firstDayCalendar.add(weekDuration),
+                presenceHistory: widget.presenceHistory,
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  CalendarTile(text: '15', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '16', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '17', presenceStatus: PresenceEnum.notPresent, isToday: true,),
-                  CalendarTile(text: '18', presenceStatus: PresenceEnum.dayOff),
-                  CalendarTile(text: '19', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '20', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '21', presenceStatus: PresenceEnum.notPresent),
-                ],
-              ),
+            CalendarRow(
+                date: _firstDayCalendar.add(weekDuration * 2),
+                presenceHistory: widget.presenceHistory,
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  CalendarTile(text: '22', presenceStatus: PresenceEnum.dayOff),
-                  CalendarTile(text: '23', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '24', presenceStatus: PresenceEnum.present),
-                  CalendarTile(text: '25', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '26', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '27', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '28', presenceStatus: PresenceEnum.notPresent),
-                ],
-              ),
+            CalendarRow(
+                date: _firstDayCalendar.add(weekDuration * 3),
+                presenceHistory: widget.presenceHistory,
             ),
-            Expanded(
-              child: Row(
-                children: [
-                  CalendarTile(text: '29', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '30', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '31', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '1', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '2', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '3', presenceStatus: PresenceEnum.notPresent),
-                  CalendarTile(text: '4', presenceStatus: PresenceEnum.notPresent),
-                ],
-              ),
+            CalendarRow(
+                date: _firstDayCalendar.add(weekDuration * 4),
+                presenceHistory: widget.presenceHistory,
+            ),
+            CalendarRow(
+                date: _firstDayCalendar.add(weekDuration * 5),
+                presenceHistory: widget.presenceHistory,
             ),
           ],
         ),
       ),
     );
   }
+
+
 }

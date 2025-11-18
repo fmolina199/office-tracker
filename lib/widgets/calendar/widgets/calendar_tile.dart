@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
 
 class CalendarTile extends StatelessWidget {
-  final String text;
+  final DateTime date;
   final PresenceEnum presenceStatus;
   final bool isToday;
 
   const CalendarTile({
     super.key,
-    required this.text,
+    required this.date,
     required this.presenceStatus,
     this.isToday = false,
   });
@@ -31,7 +31,7 @@ class CalendarTile extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                text,
+                '${date.day}',
                 style: TextStyle(
                   fontSize: (isToday) ? 12 : 10,
                   fontWeight: FontWeight.bold,

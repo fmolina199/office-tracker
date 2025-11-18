@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class WeekDayLabel extends StatelessWidget {
+class WeekdayLabel extends StatelessWidget {
   final String text;
 
-  const WeekDayLabel({
+  const WeekdayLabel({
     super.key,
     required this.text,
   });
