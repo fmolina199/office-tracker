@@ -9,16 +9,8 @@ import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dar
 
 
 class CalendarScreen extends StatefulWidget {
-  final Settings settings;
-  final TrackerHistory<DateTime> presenceHistory;
-  final TrackerHistory<DateTime>? holidayHistory;
-
-
   const CalendarScreen({
     super.key,
-    required this.settings,
-    required this.presenceHistory,
-    this.holidayHistory,
   });
 
   @override
@@ -44,15 +36,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   DateTime _selectedMonth = getCurrentMonthDate();
-  DateTime _firstDayCalendar = getCurrentMonthDate();
+
 
   void setNewSelectedMonth(DateTime date) {
     setState(() {
       _selectedMonth = date;
-      _firstDayCalendar = getFirstDayInCalendar(
-          date,
-          widget.settings.firstWeekday
-      );
     });
   }
 
@@ -78,6 +66,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final firstWeekday = Settings().firstWeekday;
+    final presenceHistory = TrackerHistory<DateTime>();
+    final firstDayCalendar = getFirstDayInCalendar(
+      getCurrentMonthDate(),
+      Settings().firstWeekday,
+    );
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 1000,
@@ -97,30 +91,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 Expanded(child: Container(height: formHorizontalPadding)),
               ],
             ),
-            WeekdaysRow(firstWeekday: widget.settings.firstWeekday),
+            WeekdaysRow(firstWeekday: firstWeekday),
             CalendarRow(
-              date: _firstDayCalendar,
-              presenceHistory: widget.presenceHistory,
+              date: firstDayCalendar,
+              presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: _firstDayCalendar.add(weekDuration),
-                presenceHistory: widget.presenceHistory,
+                date: firstDayCalendar.add(weekDuration),
+                presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: _firstDayCalendar.add(weekDuration * 2),
-                presenceHistory: widget.presenceHistory,
+                date: firstDayCalendar.add(weekDuration * 2),
+                presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: _firstDayCalendar.add(weekDuration * 3),
-                presenceHistory: widget.presenceHistory,
+                date: firstDayCalendar.add(weekDuration * 3),
+                presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: _firstDayCalendar.add(weekDuration * 4),
-                presenceHistory: widget.presenceHistory,
+                date: firstDayCalendar.add(weekDuration * 4),
+                presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: _firstDayCalendar.add(weekDuration * 5),
-                presenceHistory: widget.presenceHistory,
+                date: firstDayCalendar.add(weekDuration * 5),
+                presenceHistory: presenceHistory,
             ),
           ],
         ),

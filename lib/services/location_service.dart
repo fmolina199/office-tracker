@@ -19,8 +19,8 @@ class GeoPosition {
 class LocationService {
   static final _log = LoggingUtil('NotificationService');
 
-  Future<void> _initLocation() async {
-    _log.debug('Calling _initLocation');
+  Future<void> _init() async {
+    _log.debug('Calling _init');
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       // Location services are not enabled don't continue
@@ -75,7 +75,7 @@ class LocationService {
     if (_instance == null) {
       LocationService._log.debug('Starting LocationService');
       _instance = LocationService._privateConstructor();
-      await _instance?._initLocation();
+      await _instance?._init();
     }
     return _instance!;
   }

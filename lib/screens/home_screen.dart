@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final List<Widget> _widgets = <Widget>[
-    CalendarScreen(settings: Settings(), presenceHistory: TrackerHistory(),),
+    CalendarScreen(),
     ReportScreen(),
     SettingsScreen(),
   ];

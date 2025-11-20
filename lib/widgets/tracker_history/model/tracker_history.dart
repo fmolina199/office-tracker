@@ -41,11 +41,11 @@ class TrackerHistory<T> {
     return json;
   }
 
-  static TrackerHistory fromJson(Map<String, dynamic> json) {
-    final trackerHistory = TrackerHistory();
+  static TrackerHistory<T> fromJson<T>(Map<String, dynamic> json) {
+    final trackerHistory = TrackerHistory<T>();
     json.forEach((key, value) {
       final month = int.parse(key);
-      trackerHistory._history[month] = MonthHistory.fromJson(value);
+      trackerHistory._history[month] = MonthHistory.fromJson<T>(value);
     });
     return trackerHistory;
   }

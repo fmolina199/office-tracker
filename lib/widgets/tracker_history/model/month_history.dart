@@ -39,11 +39,11 @@ class MonthHistory<T> {
     return json;
   }
 
-  static MonthHistory fromJson(Map<String, dynamic> json) {
-    final monthHistory = MonthHistory();
+  static MonthHistory<T> fromJson<T>(Map<String, dynamic> json) {
+    final monthHistory = MonthHistory<T>();
     json.forEach((key, value) {
       final month = int.parse(key);
-      monthHistory._history[month] = DayHistory.fromJson(value);
+      monthHistory._history[month] = DayHistory.fromJson<T>(value);
     });
     return monthHistory;
   }

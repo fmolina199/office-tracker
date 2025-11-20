@@ -53,8 +53,8 @@ class NotificationService {
     );
   }
 
-  Future<void> _initNotification() async {
-    _log.debug('Calling _initNotification');
+  Future<void> _init() async {
+    _log.debug('Calling _init');
     _checkPermissions();
     await _notificationPlugin.initialize(_createNotificationSettings());
   }
@@ -94,7 +94,7 @@ class NotificationService {
     if (_instance == null) {
       NotificationService._log.debug('Starting NotificationService');
       _instance = NotificationService._privateConstructor();
-      await _instance?._initNotification();
+      await _instance?._init();
     }
     return _instance!;
   }
