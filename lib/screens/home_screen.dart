@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:office_tracker/model/settings.dart';
 import 'package:office_tracker/screens/calendar_screen.dart';
 import 'package:office_tracker/screens/report_screen.dart';
 import 'package:office_tracker/screens/settings_screen.dart';
 import 'package:office_tracker/utils/logging_util.dart';
-import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

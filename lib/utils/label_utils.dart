@@ -1,5 +1,7 @@
-String getWeekdayLabel(int weekDay) {
-  switch(weekDay) {
+import 'package:office_tracker/constants/menus.dart';
+
+String getWeekdayLabel(int weekday) {
+  switch(weekday) {
     case DateTime.saturday:
       return 'Saturday';
     case DateTime.monday:
@@ -16,10 +18,10 @@ String getWeekdayLabel(int weekDay) {
       return 'Sunday';
   }
   throw RangeError.index(
-    weekDay,
+    weekday,
     DateTime,
     'Invalid weekday index',
-    'Index $weekDay is invalid'
+    'Index $weekday is invalid'
   );
 }
 
@@ -55,5 +57,26 @@ String getMonthLabel(int month) {
       DateTime,
       'Invalid month index',
       'Index $month is invalid'
+  );
+}
+
+String getReportSizeLabel(int size) {
+  switch(size) {
+    case 1:
+      return '1 Month';
+    case 2:
+      return '2 Months';
+    case 3:
+      return '3 Months';
+    case 4:
+      return '4 Months';
+    case 6:
+      return '6 Months';
+  }
+  throw RangeError.index(
+      size,
+      reportSizeList,
+      'Invalid report size',
+      'Index $size is invalid'
   );
 }

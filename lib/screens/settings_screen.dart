@@ -1,7 +1,10 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:office_tracker/constants/menus.dart';
 import 'package:office_tracker/constants/sizes.dart';
-import 'package:office_tracker/widgets/forms/inputs/labeled_dropdown_menu.dart';
+import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/utils/label_utils.dart';
+import 'package:office_tracker/widgets/forms/inputs/labeled_menu.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,37 +15,58 @@ class SettingsScreen extends StatefulWidget {
 
 const height = 48.0;
 class _SettingsScreenState extends State<SettingsScreen> {
-  int reportSize = reportSizes.first.value;
-  int reportStartingMonth = months.first.value;
-  int calendarFirstWeekDay = weekDays.first.value;
+  int reportSize = 1;
+  int reportStartingMonth = DateTime.january;
+  int calendarFirstWeekday = DateTime.sunday;
+  List<int> weekdaysOff = Settings.defaultWeekdaysOff;
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: 400,
+        maxWidth: 600,
       ),
       child: Padding(
         padding: const EdgeInsets.all(formHorizontalPadding),
         child: Column(
           spacing: betweenItemsSpace,
           children: [
-            LabeledDropdownMenu(
-                text: 'Report Size:',
-                initialSelection: reportSize,
-                menuEntries: reportSizes
+            LabeledMenu(
+              text: 'Report Size:',
+              child: DropdownSearch<int>(
+                selectedItem: reportSize,
+                items: (f, cs) => reportSizeList,
+                itemAsString: (item) => getReportSizeLabel(item),
+                onSaved: (newValue) => reportSize = newValue ?? 1,
+              ),
             ),
-            LabeledDropdownMenu(
-                text: 'Starting Month:',
-                initialSelection: reportStartingMonth,
-                menuEntries: months
+            LabeledMenu(
+              text: 'Starting Month:',
+              child: DropdownSearch<int>(
+                selectedItem: reportStartingMonth,
+                items: (f, cs) => monthList,
+                itemAsString: (item) => getMonthLabel(item),
+                onSaved: (newValue) => reportStartingMonth = newValue ?? DateTime.january,
+              ),
             ),
-            LabeledDropdownMenu(
-                text: 'First Week Day:',
-                initialSelection: calendarFirstWeekDay,
-                menuEntries: weekDays
+            LabeledMenu(
+              text: 'First Weekday:',
+              child: DropdownSearch<int>(
+                selectedItem: calendarFirstWeekday,
+                items: (f, cs) => weekdayList,
+                itemAsString: (item) => getWeekdayLabel(item),
+                onSaved: (newValue) => calendarFirstWeekday = newValue ?? DateTime.sunday,
+              ),
             ),
-            //TODO add option to select which days of the week someone is off (default to sat and sun)
+            LabeledMenu(
+                text: 'Weekdays Off:',
+                child: DropdownSearch<int>.multiSelection(
+                  selectedItems: weekdaysOff,
+                  items: (f, cs) => weekdayList,
+                  itemAsString: (item) => getWeekdayLabel(item),
+                  onSaved: (newValue) => weekdaysOff = newValue ?? Settings.defaultWeekdaysOff,
+                ),
+            ),
           ],
         ),
       ),

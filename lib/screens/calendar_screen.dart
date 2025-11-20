@@ -72,6 +72,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       getCurrentMonthDate(),
       Settings().firstWeekday,
     );
+    final List<int> weekdaysOff = [DateTime.sunday, DateTime.saturday];
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 1000,
@@ -94,27 +95,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
             WeekdaysRow(firstWeekday: firstWeekday),
             CalendarRow(
               date: firstDayCalendar,
+              weekdaysOff: weekdaysOff,
               presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: firstDayCalendar.add(weekDuration),
-                presenceHistory: presenceHistory,
+              date: firstDayCalendar.add(weekDuration),
+              weekdaysOff: weekdaysOff,
+              presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: firstDayCalendar.add(weekDuration * 2),
-                presenceHistory: presenceHistory,
+              date: firstDayCalendar.add(weekDuration * 2),
+              weekdaysOff: weekdaysOff,
+              presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: firstDayCalendar.add(weekDuration * 3),
-                presenceHistory: presenceHistory,
+              date: firstDayCalendar.add(weekDuration * 3),
+              weekdaysOff: weekdaysOff,
+              presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: firstDayCalendar.add(weekDuration * 4),
-                presenceHistory: presenceHistory,
+              date: firstDayCalendar.add(weekDuration * 4),
+              weekdaysOff: weekdaysOff,
+              presenceHistory: presenceHistory,
             ),
             CalendarRow(
-                date: firstDayCalendar.add(weekDuration * 5),
-                presenceHistory: presenceHistory,
+              date: firstDayCalendar.add(weekDuration * 5),
+              weekdaysOff: weekdaysOff,
+              presenceHistory: presenceHistory,
             ),
           ],
         ),

@@ -6,12 +6,14 @@ import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dar
 
 class CalendarRow extends StatelessWidget {
   final DateTime date;
+  final List<int> weekdaysOff;
   final TrackerHistory<DateTime> presenceHistory;
   final TrackerHistory<DateTime>? holidayHistory;
 
   const CalendarRow({
     super.key,
     required this.date,
+    required this.weekdaysOff,
     required this.presenceHistory,
     this.holidayHistory,
   });
@@ -26,6 +28,7 @@ class CalendarRow extends StatelessWidget {
           date: countDate,
           presenceStatus: getPresenceStatus(
               date: countDate,
+              weekdaysOff: weekdaysOff,
               presenceHistory: presenceHistory,
               holidayHistory: holidayHistory)
       ));

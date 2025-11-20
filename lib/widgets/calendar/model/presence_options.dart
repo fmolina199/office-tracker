@@ -10,6 +10,7 @@ enum PresenceEnum {
 
 PresenceEnum getPresenceStatus({
   required DateTime date,
+  required List<int> weekdaysOff,
   required TrackerHistory presenceHistory,
   TrackerHistory? holidayHistory,
 }) {
@@ -17,8 +18,7 @@ PresenceEnum getPresenceStatus({
     return PresenceEnum.present;
   }
 
-  if (date.weekday == DateTime.saturday
-      || date.weekday == DateTime.sunday
+  if (weekdaysOff.contains(date.weekday)
       || DateTime.now().isBefore(date)
       || (holidayHistory != null
           && holidayHistory.isPresent(date))
