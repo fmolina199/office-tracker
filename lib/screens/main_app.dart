@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:office_tracker/constants/colors.dart';
 import 'package:office_tracker/screens/home_screen.dart';
+import 'package:office_tracker/state_management/settings_cubit.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -13,7 +15,10 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: mainColor),
       ),
-      home: const HomeScreen(),
+      home: BlocProvider(
+        create: (_) => SettingsCubit(),
+        child: HomeScreen(),
+      ),
     );
   }
 }

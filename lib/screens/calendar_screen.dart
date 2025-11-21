@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:office_tracker/constants/sizes.dart';
-import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/state_management/settings_cubit.dart';
+import 'package:office_tracker/utils/logging_util.dart';
 import 'package:office_tracker/widgets/calendar/constants/sizes.dart';
 import 'package:office_tracker/widgets/calendar/widgets/calendar_head.dart';
 import 'package:office_tracker/widgets/calendar/widgets/calendar_row.dart';
@@ -18,6 +20,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  static final _log = LoggingUtil('_CalendarScreenState');
   static DateTime getCurrentMonthDate() {
     final date = DateTime.now();
     return DateTime(
@@ -66,13 +69,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final firstWeekday = Settings().firstWeekday;
+    _log.debug('Calling build');
     final presenceHistory = TrackerHistory<DateTime>();
+    final settings = context.watch<SettingsCubit>().state;
+    final firstWeekday = settings.firstWeekday;
+    final List<int> weekdaysOff = settings.weekdaysOff;
+
     final firstDayCalendar = getFirstDayInCalendar(
-      getCurrentMonthDate(),
-      Settings().firstWeekday,
+      _selectedMonth,
+      firstWeekday,
     );
-    final List<int> weekdaysOff = [DateTime.sunday, DateTime.saturday];
+
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 1000,
@@ -85,7 +92,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             CalendarHead(
               date: _selectedMonth,
               onClickLeftArrow: subtractOneMonth,
-              onClickRightArrow:  addOneMonth,
+              onClickRightArrow: addOneMonth,
             ),
             Row(
               children: [

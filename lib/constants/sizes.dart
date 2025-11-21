@@ -8,3 +8,6 @@ const defaultFontSize = 18.0;
 const formHorizontalPadding = 10.0;
 const labelFlexValue = 2;
 const inputFlexValue = 5;
+
+/// Time
+const oneSecondDuration = Duration(seconds: 1);

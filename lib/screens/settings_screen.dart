@@ -1,27 +1,30 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:office_tracker/constants/menus.dart';
 import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/state_management/settings_cubit.dart';
 import 'package:office_tracker/utils/label_utils.dart';
+import 'package:office_tracker/utils/logging_util.dart';
 import 'package:office_tracker/widgets/forms/inputs/labeled_menu.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
+  static final _log = LoggingUtil('SettingsScreen');
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-const height = 48.0;
-class _SettingsScreenState extends State<SettingsScreen> {
-  int reportSize = 1;
-  int reportStartingMonth = DateTime.january;
-  int calendarFirstWeekday = DateTime.sunday;
-  List<int> weekdaysOff = Settings.defaultWeekdaysOff;
-
-  @override
   Widget build(BuildContext context) {
+    _log.debug('Calling build');
+
+    final settings =  context.watch<SettingsCubit>().state;
+    _log.debug('Settings: $settings');
+
+    final int reportSize = settings.reportMonthSize;
+    final int reportStartingMonth = settings.reportStartMonth;
+    final int calendarFirstWeekday = settings.firstWeekday;
+    final List<int> weekdaysOff = settings.weekdaysOff;
+
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 600,
@@ -37,7 +40,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 selectedItem: reportSize,
                 items: (f, cs) => reportSizeList,
                 itemAsString: (item) => getReportSizeLabel(item),
-                onSaved: (newValue) => reportSize = newValue ?? 1,
+                onChanged: (newValue) => context.read<SettingsCubit>().set(
+                  settings.copyWith(
+                    reportMonthSize: newValue ?? Settings.defaultReportSize
+                  )
+                ),
               ),
             ),
             LabeledMenu(
@@ -46,7 +53,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 selectedItem: reportStartingMonth,
                 items: (f, cs) => monthList,
                 itemAsString: (item) => getMonthLabel(item),
-                onSaved: (newValue) => reportStartingMonth = newValue ?? DateTime.january,
+                onChanged: (newValue) => context.read<SettingsCubit>().set(
+                  settings.copyWith(
+                   reportStartMonth: newValue ?? Settings.defaultStartMonth
+                  )
+                ),
               ),
             ),
             LabeledMenu(
@@ -55,17 +66,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 selectedItem: calendarFirstWeekday,
                 items: (f, cs) => weekdayList,
                 itemAsString: (item) => getWeekdayLabel(item),
-                onSaved: (newValue) => calendarFirstWeekday = newValue ?? DateTime.sunday,
+                onChanged: (newValue) => context.read<SettingsCubit>().set(
+                  settings.copyWith(
+                    firstWeekday: newValue ?? Settings.defaultFirstWeekday
+                  )
+                ),
               ),
             ),
             LabeledMenu(
-                text: 'Weekdays Off:',
-                child: DropdownSearch<int>.multiSelection(
-                  selectedItems: weekdaysOff,
-                  items: (f, cs) => weekdayList,
-                  itemAsString: (item) => getWeekdayLabel(item),
-                  onSaved: (newValue) => weekdaysOff = newValue ?? Settings.defaultWeekdaysOff,
+              text: 'Weekdays Off:',
+              child: DropdownSearch<int>.multiSelection(
+                selectedItems: weekdaysOff,
+                items: (f, cs) => weekdayList,
+                itemAsString: (item) => getWeekdayLabel(item),
+                onChanged: (newValue) => context.read<SettingsCubit>().set(
+                  settings.copyWith(
+                    weekdaysOff: newValue
+                  )
                 ),
+              ),
             ),
           ],
         ),

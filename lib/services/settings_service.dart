@@ -14,15 +14,17 @@ class SettingsService {
     final settingsStr = prefs.getString('settings') ?? '';
     if (settingsStr.isNotEmpty) {
       settings = Settings.fromJson(jsonDecode(settingsStr));
+      _log.debug('Loaded settings: $settings');
     }
   }
 
   Settings get() => settings;
 
-  void save(Settings settings) async {
+  Future<void> save(Settings settings) async {
     this.settings = settings;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('settings', jsonEncode(this.settings.toJson()));
+    _log.debug('Saved settings: $settings');
   }
 
   /// Singleton Configuration
