@@ -10,17 +10,18 @@ class SettingsCubit extends Cubit<Settings> {
     _log.debug('Calling constructor');
     Future.delayed(oneSecondDuration, () async {
       _log.debug('Loading settings from shared preferences');
-      final savedSettings = await SettingsService.instance;
-      _log.debug('Loaded settings $savedSettings');
-      emit(savedSettings.get());
+      final service = await SettingsService.instance;
+      final obj = service.get();
+      _log.debug('Loaded settings: $obj');
+      emit(obj);
     });
   }
 
   void set(final Settings settings) {
     Future.delayed(oneSecondDuration, () async {
       _log.debug('Saving settings in shared preference: $settings');
-      final savedSettings = await SettingsService.instance;
-      await savedSettings.save(settings);
+      final savedObj = await SettingsService.instance;
+      await savedObj.save(settings);
     });
     emit(settings);
   }

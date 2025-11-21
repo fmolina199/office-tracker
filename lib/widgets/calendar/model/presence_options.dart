@@ -8,14 +8,23 @@ enum PresenceEnum {
   dayOff,
 }
 
+PresenceEnum getPresenceEnumFromString(String str) {
+  for (PresenceEnum element in PresenceEnum.values) {
+    if (element.toString() == str) {
+      return element;
+    }
+  }
+  throw ArgumentError('$str is not a valid PresenceEnum');
+}
+
 PresenceEnum getPresenceStatus({
   required DateTime date,
   required List<int> weekdaysOff,
-  required TrackerHistory presenceHistory,
-  TrackerHistory? holidayHistory,
+  required TrackerHistory<PresenceEnum> presenceHistory,
+  TrackerHistory<DateTime>? holidayHistory,
 }) {
   if (presenceHistory.isPresent(date)) {
-    return PresenceEnum.present;
+    return presenceHistory.get(date)!;
   }
 
   if (weekdaysOff.contains(date.weekday)

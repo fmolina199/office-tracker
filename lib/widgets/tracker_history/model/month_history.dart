@@ -29,6 +29,10 @@ class MonthHistory<T> {
     }
   }
 
+  T? get(DateTime date) {
+    return _history[date.month]?.get(date);
+  }
+
   int size() {
     return _history.length;
   }

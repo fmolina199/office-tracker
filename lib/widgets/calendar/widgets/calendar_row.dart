@@ -7,8 +7,9 @@ import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dar
 class CalendarRow extends StatelessWidget {
   final DateTime date;
   final List<int> weekdaysOff;
-  final TrackerHistory<DateTime> presenceHistory;
+  final TrackerHistory<PresenceEnum> presenceHistory;
   final TrackerHistory<DateTime>? holidayHistory;
+  final OnClickCallback? onClick;
 
   const CalendarRow({
     super.key,
@@ -16,6 +17,7 @@ class CalendarRow extends StatelessWidget {
     required this.weekdaysOff,
     required this.presenceHistory,
     this.holidayHistory,
+    this.onClick,
   });
 
   @override
@@ -26,6 +28,7 @@ class CalendarRow extends StatelessWidget {
     for (var i=0; i<DateTime.daysPerWeek; i++) {
       widgets.add(CalendarTile(
           date: countDate,
+          onClick: onClick,
           presenceStatus: getPresenceStatus(
               date: countDate,
               weekdaysOff: weekdaysOff,

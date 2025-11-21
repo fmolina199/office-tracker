@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
 
 class DayHistory<T> {
   static final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
@@ -14,6 +15,10 @@ class DayHistory<T> {
 
   void remove(DateTime date) {
     _history.remove(date.day);
+  }
+
+  T? get(DateTime date) {
+    return _history[date.day];
   }
 
   int size() {
@@ -38,6 +43,9 @@ class DayHistory<T> {
       final day = int.parse(key);
       if (T == DateTime) {
         dayHistory._history[day] = _dateFormat.parse(value) as T;
+      } else if (T == PresenceEnum) {
+        dayHistory._history[day] = getPresenceEnumFromString(
+            value as String) as T;
       } else {
         dayHistory._history[day] = value as T;
       }

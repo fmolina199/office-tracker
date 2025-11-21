@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:office_tracker/widgets/tracker_history/model/month_history.dart';
 
 class TrackerHistory<T> {
@@ -25,14 +26,17 @@ class TrackerHistory<T> {
   }
 
   void remove(DateTime date) {
-    final year = date.month;
-
+    final year = date.year;
     if (_history.containsKey(year)) {
       _history[year]!.remove(date);
       if (_history[year]!.size() == 0) {
         _history.remove(year);
       }
     }
+  }
+
+  T? get(DateTime date) {
+    return _history[date.year]?.get(date);
   }
 
   Map<String, dynamic> toJson() {
@@ -48,5 +52,16 @@ class TrackerHistory<T> {
       trackerHistory._history[month] = MonthHistory.fromJson<T>(value);
     });
     return trackerHistory;
+  }
+
+  @override
+  bool operator ==(Object other) => false;
+
+  @override
+  int get hashCode => Random().nextInt(9999999);
+
+  @override
+  String toString() {
+    return 'TrackerHistory { length: ${_history.length} }';
   }
 }
