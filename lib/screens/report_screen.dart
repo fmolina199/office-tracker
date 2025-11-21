@@ -1,15 +1,33 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
-class ReportScreen extends StatefulWidget {
+class ReportScreen extends StatelessWidget {
   const ReportScreen({super.key});
+  static const checkIcon = Icon(Icons.check, color: Colors.lightGreen);
+  static const closeIcon = Icon(Icons.close, color: Colors.red);
 
-  @override
-  State<ReportScreen> createState() => _ReportScreenState();
-}
-
-class _ReportScreenState extends State<ReportScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Text('Report Screen');
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context)
+        .copyWith(dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: ListView.separated(
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+        itemCount: 100,
+        itemBuilder: (context, index) {
+          /// TODO fill with correct math
+          return ListTile(
+            leading: closeIcon,
+            title: Text('Presence $index%'),
+            subtitle: Text('Days present 32:, days absent: 2, holidays: 123'),
+          );
+        },
+      ),
+    );
   }
 }

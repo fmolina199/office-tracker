@@ -30,7 +30,7 @@ class CalendarTile extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: getPresenceColor(presenceStatus),
-              borderRadius: BorderRadiusGeometry.all(Radius.circular(10.0)),
+              borderRadius: BorderRadiusGeometry.all(Radius.circular(4.0)),
               border: BoxBorder.fromBorderSide(
                   BorderSide(
                     color: getBorderColor(presenceStatus),

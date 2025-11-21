@@ -9,9 +9,17 @@ import 'package:office_tracker/utils/label_utils.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 import 'package:office_tracker/widgets/forms/inputs/labeled_menu.dart';
 
-class SettingsScreen extends StatelessWidget {
-  static final _log = LoggingUtil('SettingsScreen');
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  static final _log = LoggingUtil('SettingsScreen');
+
+  int? requiredAttendance;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +28,7 @@ class SettingsScreen extends StatelessWidget {
     final settings =  context.watch<SettingsCubit>().state;
     _log.debug('Settings: $settings');
 
+    requiredAttendance ??= settings.requiredAttendance;
     final int reportSize = settings.reportMonthSize;
     final int reportStartingMonth = settings.reportStartMonth;
     final int calendarFirstWeekday = settings.firstWeekday;
@@ -82,6 +91,25 @@ class SettingsScreen extends StatelessWidget {
                 onChanged: (newValue) => context.read<SettingsCubit>().set(
                   settings.copyWith(
                     weekdaysOff: newValue
+                  )
+                ),
+              ),
+            ),
+            LabeledMenu(
+              text: 'Required Attendance ($requiredAttendance%):',
+              child: Slider(
+                value: requiredAttendance!.toDouble(),
+                max: 100,
+                min: 0,
+                label: 'Label',
+                onChanged: (newValue) {
+                  setState(() {
+                    requiredAttendance = newValue.toInt();
+                  });
+                },
+                onChangeEnd: (newValue) => context.read<SettingsCubit>().set(
+                  settings.copyWith(
+                    requiredAttendance: newValue.toInt()
                   )
                 ),
               ),
