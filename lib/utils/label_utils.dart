@@ -64,19 +64,7 @@ String getReportSizeLabel(int size) {
   switch(size) {
     case 1:
       return '1 Month';
-    case 2:
-      return '2 Months';
-    case 3:
-      return '3 Months';
-    case 4:
-      return '4 Months';
-    case 6:
-      return '6 Months';
+    default:
+      return '$size Months';
   }
-  throw RangeError.index(
-      size,
-      reportSizeList,
-      'Invalid report size',
-      'Index $size is invalid'
-  );
 }

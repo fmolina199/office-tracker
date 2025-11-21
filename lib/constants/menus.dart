@@ -26,9 +26,10 @@ const monthList = [
 
 /// Settings Screen
 const reportSizeList = [
-  1, // 1 Month
-  2, // 2 Months
-  3, // 3 Months
-  4, // 4 Months
-  6, // 6 Months
+  1,  // 1 Month
+  2,  // 2 Months
+  3,  // 3 Months
+  4,  // 4 Months
+  6,  // 6 Months
+  12, // 12 Months
 ];
