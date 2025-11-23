@@ -9,7 +9,7 @@ class PresenceHistoryCubit extends Cubit<TrackerHistory<PresenceEnum>> {
   static final _log = LoggingUtil('PresenceHistoryCubit');
   PresenceHistoryCubit() : super(TrackerHistory()) {
     _log.debug('Calling constructor');
-    Future.delayed(oneSecondDuration, () async {
+    Future.delayed(Duration.zero, () async {
       _log.debug('Loading presence history from shared preferences');
       final service = await PresenceHistoryService.instance;
       final obj = service.get();

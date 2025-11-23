@@ -4,7 +4,7 @@ import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dar
 
 enum PresenceEnum {
   present,
-  notPresent,
+  absent,
   dayOff,
 }
 
@@ -35,14 +35,14 @@ PresenceEnum getPresenceStatus({
     return PresenceEnum.dayOff;
   }
 
-  return PresenceEnum.notPresent;
+  return PresenceEnum.absent;
 }
 
 Color getPresenceColor(PresenceEnum option) {
   switch (option) {
     case PresenceEnum.present:
       return mainColor.shade100;
-    case PresenceEnum.notPresent:
+    case PresenceEnum.absent:
       return Colors.redAccent.shade100;
     case PresenceEnum.dayOff:
       return Colors.white70;
@@ -53,7 +53,7 @@ Color getBorderColor(PresenceEnum option) {
   switch (option) {
     case PresenceEnum.present:
       return mainColor;
-    case PresenceEnum.notPresent:
+    case PresenceEnum.absent:
       return Colors.redAccent;
     case PresenceEnum.dayOff:
       return Colors.black12;

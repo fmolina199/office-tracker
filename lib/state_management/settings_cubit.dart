@@ -8,7 +8,7 @@ class SettingsCubit extends Cubit<Settings> {
   static final _log = LoggingUtil('SettingsCubit');
   SettingsCubit() : super(Settings()) {
     _log.debug('Calling constructor');
-    Future.delayed(oneSecondDuration, () async {
+    Future.delayed(halfSecondDuration, () async {
       _log.debug('Loading settings from shared preferences');
       final service = await SettingsService.instance;
       final obj = service.get();

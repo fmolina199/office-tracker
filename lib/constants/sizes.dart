@@ -10,4 +10,5 @@ const labelFlexValue = 2;
 const inputFlexValue = 5;
 
 /// Time
+const halfSecondDuration = Duration(milliseconds: 500);
 const oneSecondDuration = Duration(seconds: 1);

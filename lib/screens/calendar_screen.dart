@@ -99,7 +99,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: const Text('Absent'),
                 onPressed: () {
                   parentContext.read<PresenceHistoryCubit>().add(
-                      date, PresenceEnum.notPresent
+                      date, PresenceEnum.absent
                   );
                   Navigator.pop(context);
                 },
