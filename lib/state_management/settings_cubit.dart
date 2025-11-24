@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/services/settings_service.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 
@@ -12,6 +13,9 @@ class SettingsCubit extends Cubit<Settings> {
       _log.debug('Loading settings from shared preferences');
       final service = await SettingsService.instance;
       final obj = service.get();
+      _log.debug('Loading location service');
+      final locationService = await LocationService.instance;
+      locationService.startBackgroundLocation();
       _log.debug('Loaded settings: $obj');
       emit(obj);
     });

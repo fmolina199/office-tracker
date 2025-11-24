@@ -6,12 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HolidayHistoryService {
   static final _log = LoggingUtil('HolidayHistoryService');
+  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
   /// Class Implementation
   TrackerHistory<DateTime> holidayHistory = TrackerHistory();
   Future<void> _init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final holidayHistoryStr = prefs.getString('holidayHistory') ?? '';
+    final holidayHistoryStr = await prefs.getString('holidayHistory') ?? '';
     if (holidayHistoryStr.isNotEmpty) {
       holidayHistory = TrackerHistory.fromJson<DateTime>(jsonDecode(holidayHistoryStr));
     }
@@ -20,7 +20,6 @@ class HolidayHistoryService {
   TrackerHistory<DateTime> get() => holidayHistory;
 
   void save() async {
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('holidayHistory', jsonEncode(holidayHistory.toJson()));
   }
 

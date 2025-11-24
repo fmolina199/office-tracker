@@ -7,22 +7,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PresenceHistoryService {
   static final _log = LoggingUtil('PresenceHistoryService');
+  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
   /// Class Implementation
   TrackerHistory<PresenceEnum> presenceHistory = TrackerHistory();
   Future<void> _init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final presenceHistoryStr = prefs.getString('presenceHistory') ?? '';
+    final presenceHistoryStr = await prefs.getString('presenceHistory') ?? '';
     if (presenceHistoryStr.isNotEmpty) {
-      presenceHistory = TrackerHistory.fromJson<PresenceEnum>(jsonDecode(presenceHistoryStr));
+      presenceHistory = TrackerHistory
+          .fromJson<PresenceEnum>(
+              jsonDecode(presenceHistoryStr));
     }
   }
 
   TrackerHistory<PresenceEnum> get() => presenceHistory;
 
   void save() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('presenceHistory', jsonEncode(presenceHistory.toJson()));
+    await prefs.setString(
+        'presenceHistory', jsonEncode(presenceHistory.toJson()));
   }
 
   /// Singleton Configuration

@@ -6,12 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
   static final _log = LoggingUtil('SettingsService');
+  final SharedPreferencesAsync prefs = SharedPreferencesAsync();
 
   /// Class Implementation
   Settings settings = Settings();
   Future<void> _init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final settingsStr = prefs.getString('settings') ?? '';
+    final settingsStr = await prefs.getString('settings') ?? '';
     if (settingsStr.isNotEmpty) {
       settings = Settings.fromJson(jsonDecode(settingsStr));
       _log.debug('Loaded settings: $settings');
@@ -22,9 +22,7 @@ class SettingsService {
 
   Future<void> save(Settings settings) async {
     this.settings = settings;
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('settings', jsonEncode(this.settings.toJson()));
-    _log.debug('Saved settings: $settings');
   }
 
   /// Singleton Configuration
