@@ -20,7 +20,6 @@ class GeoPosition {
 
 class LocationService {
   static final _log = LoggingUtil('NotificationService');
-  StreamSubscription<Position>? _locationSubscription;
 
   Future<void> _init() async {
     _log.debug('Calling _init');
@@ -67,21 +66,6 @@ class LocationService {
       latitude: position.latitude,
       longitude: position.longitude,
     );
-  }
-
-  Future<void> startBackgroundLocation() async {
-    final LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.low,
-      distanceFilter: 1000,
-    );
-    _locationSubscription = Geolocator.getPositionStream(
-      locationSettings: locationSettings
-    ).listen((Position? position) {
-      var strLocation = position == null
-          ? 'Unknown'
-          : '${position.latitude.toString()}, ${position.longitude.toString()}';
-      _log.debug('Received Location: $strLocation');
-    });
   }
 
   /// Singleton Configuration

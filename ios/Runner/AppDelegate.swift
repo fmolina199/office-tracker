@@ -31,7 +31,7 @@ import flutter_local_notifications
   ) {
     let controller = window?.rootViewController as! FlutterViewController
     let channel = FlutterMethodChannel(
-        name: "com.workday.office_tracker/settings",
+        name: "br.com.fmolina.office_tracker/settings",
         binaryMessenger: controller.binaryMessenger)
 
     channel.invokeMethod("showNotificationSettings", arguments: nil)

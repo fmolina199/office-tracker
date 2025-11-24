@@ -10,6 +10,7 @@ class Settings {
   final int firstWeekday;
   final int requiredAttendance;
   final List<int> weekdaysOff;
+  final bool backgroundTaskEnabled;
 
   Settings({
     this.reportMonthSize = defaultReportSize,
@@ -17,6 +18,7 @@ class Settings {
     this.firstWeekday = defaultFirstWeekday,
     this.requiredAttendance = defaultRequiredAttendance,
     this.weekdaysOff = defaultWeekdaysOff,
+    this.backgroundTaskEnabled = false,
   }) : assert(1 <= reportMonthSize && reportMonthSize <= DateTime.monthsPerYear),
         assert(1 <= reportStartMonth && reportStartMonth <= DateTime.monthsPerYear),
         assert(0 <= requiredAttendance && requiredAttendance <= 100),
@@ -29,6 +31,7 @@ class Settings {
       'firstWeekday': firstWeekday,
       'requiredAttendance': requiredAttendance,
       'weekdaysOff': weekdaysOff,
+      'backgroundTaskEnabled': backgroundTaskEnabled,
     };
   }
 
@@ -37,7 +40,8 @@ class Settings {
         reportStartMonth = json['reportStartMonth'] as int,
         firstWeekday = json['firstWeekday'] as int,
         requiredAttendance = json['requiredAttendance'] as int,
-        weekdaysOff = json['weekdaysOff'].cast<int>();
+        weekdaysOff = json['weekdaysOff'].cast<int>(),
+        backgroundTaskEnabled = json['backgroundTaskEnabled'] as bool;
 
   Settings copyWith({
     int? reportMonthSize,
@@ -45,6 +49,7 @@ class Settings {
     int? firstWeekday,
     int? requiredAttendance,
     List<int>? weekdaysOff,
+    bool? backgroundTaskEnabled,
   }) {
     return Settings(
       reportMonthSize: reportMonthSize ?? this.reportMonthSize,
@@ -52,6 +57,7 @@ class Settings {
       firstWeekday: firstWeekday ?? this.firstWeekday,
       requiredAttendance: requiredAttendance ?? this.requiredAttendance,
       weekdaysOff: weekdaysOff ?? this.weekdaysOff,
+      backgroundTaskEnabled: backgroundTaskEnabled ?? this.backgroundTaskEnabled,
     );
   }
 
@@ -63,6 +69,7 @@ class Settings {
         'firstWeekday: $firstWeekday, '
         'requiredAttendance: $requiredAttendance '
         'weekdaysOff: $weekdaysOff '
+        'backgroundTaskEnabled: $backgroundTaskEnabled '
         '}';
   }
 }

@@ -41,7 +41,7 @@ class NotificationService {
     final WindowsInitializationSettings initializationSettingsWindows
         = WindowsInitializationSettings(
           appName: 'Office Tracker',
-          appUserModelId: 'com.workday.office_tracker',
+          appUserModelId: 'br.com.fmolina.office_tracker',
           guid: 'd001b40d-3f24-48c2-84e0-c834808ec426'
         );
     return InitializationSettings(

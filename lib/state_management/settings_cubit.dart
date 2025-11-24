@@ -10,12 +10,9 @@ class SettingsCubit extends Cubit<Settings> {
   SettingsCubit() : super(Settings()) {
     _log.debug('Calling constructor');
     Future.delayed(halfSecondDuration, () async {
-      _log.debug('Loading settings from shared preferences');
+      _log.info('Loading settings from shared preferences');
       final service = await SettingsService.instance;
       final obj = service.get();
-      _log.debug('Loading location service');
-      final locationService = await LocationService.instance;
-      locationService.startBackgroundLocation();
       _log.debug('Loaded settings: $obj');
       emit(obj);
     });
