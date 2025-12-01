@@ -19,7 +19,7 @@ class GeoPosition {
 }
 
 class LocationService {
-  static final _log = LoggingUtil('NotificationService');
+  static final _log = LoggingUtil('LocationService');
 
   Future<void> _init() async {
     _log.debug('Calling _init');

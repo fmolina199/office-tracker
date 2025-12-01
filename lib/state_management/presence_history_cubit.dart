@@ -7,6 +7,7 @@ import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dar
 
 class PresenceHistoryCubit extends Cubit<TrackerHistory<PresenceEnum>> {
   static final _log = LoggingUtil('PresenceHistoryCubit');
+
   PresenceHistoryCubit() : super(TrackerHistory()) {
     _log.debug('Calling constructor');
     Future.delayed(Duration.zero, () async {

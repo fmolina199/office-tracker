@@ -22,7 +22,7 @@ class PresenceHistoryService {
 
   TrackerHistory<PresenceEnum> get() => presenceHistory;
 
-  void save() async {
+  Future<void> save() async {
     await prefs.setString(
         'presenceHistory', jsonEncode(presenceHistory.toJson()));
   }
