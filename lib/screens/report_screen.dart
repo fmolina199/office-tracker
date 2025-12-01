@@ -114,9 +114,9 @@ class ReportScreen extends StatelessWidget {
             leading: (isAboveRequired) ? checkIcon : closeIcon,
             title: Text('${percentage.toStringAsFixed(2)}% presence'
                 ' from ${dateFormat.format(reportDate)}'),
-            subtitle: Text('Present: ${result.daysPresent};'
-                ' Absent: ${result.daysAbsent};'
-                ' Off: ${result.daysOff};'),
+            subtitle: Text('Present: ${result.daysPresent} |'
+                ' Absent: ${result.daysAbsent} |'
+                ' Off: ${result.daysOff}'),
           );
         },
       ),
