@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:office_tracker/screens/calendar_screen.dart';
 import 'package:office_tracker/screens/report_screen.dart';
 import 'package:office_tracker/screens/settings_screen.dart';
+import 'package:office_tracker/services/geofance_service.dart';
+import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,13 +22,25 @@ class _HomeScreenState extends State<HomeScreen> {
     'Settings',
   ];
 
+  var _selectedIndex = 0;
   final List<Widget> _widgets = <Widget>[
     CalendarScreen(),
     ReportScreen(),
     SettingsScreen(),
   ];
 
-  var _selectedIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      final geofenceService = await GeofenceService.instance;
+      geofenceService.setCallback((message) async {
+        _log.debug("Reloading presence history from file");
+        final phService = await PresenceHistoryService.instance;
+        await phService.reloadFromFile();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

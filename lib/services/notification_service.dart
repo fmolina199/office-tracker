@@ -1,30 +1,15 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:office_tracker/utils/logging_util.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class NotificationService {
   static final _log = LoggingUtil('NotificationService');
 
   /// Class Implementation
   final _notificationPlugin = FlutterLocalNotificationsPlugin();
-
-  void _checkPermissions() {
-    _log.debug('Calling _checkPermissions');
-    if (Platform.isAndroid) {
-      _notificationPlugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestNotificationsPermission();
-    } else if (Platform.isIOS) {
-      _notificationPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions();
-    } else if (Platform.isMacOS) {
-      _notificationPlugin
-          .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions();
-    }
-  }
+  final _random = Random();
 
   InitializationSettings _createNotificationSettings() {
     _log.debug('Calling _createNotificationSettings');
@@ -55,7 +40,7 @@ class NotificationService {
 
   Future<void> _init() async {
     _log.debug('Calling _init');
-    _checkPermissions();
+    await _checkPermissions();
     await _notificationPlugin.initialize(_createNotificationSettings());
   }
 
@@ -79,7 +64,7 @@ class NotificationService {
     {final String channelId = 'office_tracker_notification_channel'}
   ) async {
     await _notificationPlugin.show(
-        0,
+        _random.nextInt(100000),
         title,
         message,
         _createNotificationDetails(channelId: channelId));
@@ -97,5 +82,15 @@ class NotificationService {
       await _instance?._init();
     }
     return _instance!;
+  }
+
+  static Future<void> _checkPermissions() async {
+    _log.debug('Calling _checkPermissions');
+    if (await Permission.notification.isDenied) {
+      final result = await Permission.notification.request();
+      if (result.isDenied) {
+        return Future.error("Request for notification was denied");
+      }
+    }
   }
 }

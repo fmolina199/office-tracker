@@ -31,8 +31,8 @@
 	<key>NSLocationUsageDescription</key>
     <string>This app needs access to location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>The app needs the location</string>
+    <string>The app needs the location to record when you enter or exit the office, no location is stored or shared</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>The app needs the location</string>
+    <string>The app needs the location to record when you enter or exit the office, no location is stored or shared</string>
 </dict>
 </plist>

@@ -1,43 +1,32 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
-import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dart';
 
-class PresenceHistoryCubit extends Cubit<TrackerHistory<PresenceEnum>> {
+class PresenceHistoryCubit extends Cubit<PresenceHistoryService?> {
   static final _log = LoggingUtil('PresenceHistoryCubit');
 
-  PresenceHistoryCubit() : super(TrackerHistory()) {
+  PresenceHistoryCubit() : super(null) {
     _log.debug('Calling constructor');
     Future.delayed(Duration.zero, () async {
-      _log.info('Loading presence history from shared preferences');
-      final service = await PresenceHistoryService.instance;
-      final obj = service.get();
-      _log.debug('Loaded  presence history: $obj');
-      emit(obj);
+      _log.debug('Loading singleton');
+      final phService = await PresenceHistoryService.instance;
+      phService.setEmitFunction(emit);
+      emit(phService);
     });
   }
 
-  void add(DateTime date, PresenceEnum status) {
+  void add(DateTime date, PresenceEnum status) async {
     _log.info('Adding to presence history: $date');
-    state.add(date, status);
-    _save();
-    emit(state);
+    final service = await PresenceHistoryService.instance;
+    await service.add(date, status);
+    emit(service);
   }
 
-  void remove(DateTime date) {
+  void remove(DateTime date) async {
     _log.info('Removing to presence history: $date');
-    state.remove(date);
-    _save();
-    emit(state);
-  }
-
-  void _save() {
-    Future.delayed(oneSecondDuration, () async {
-      _log.debug('Saving presence history in shared preference');
-      final service = await PresenceHistoryService.instance;
-      service.save();
-    });
+    final service = await PresenceHistoryService.instance;
+    await service.remove(date);
+    emit(service);
   }
 }

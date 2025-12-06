@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:office_tracker/model/report_result.dart';
 import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/state_management/presence_history_cubit.dart';
 import 'package:office_tracker/state_management/settings_cubit.dart';
 import 'package:office_tracker/widgets/calendar/constants/sizes.dart';
@@ -41,7 +42,7 @@ class ReportScreen extends StatelessWidget {
   ReportResult getResult({
     required Settings settings,
     required DateTime reportDate,
-    required TrackerHistory<PresenceEnum> presenceHistory,
+    PresenceHistoryService? presenceHistory,
     TrackerHistory<DateTime>? holidayHistory,
   }) {
     DateTime today = DateTime.now();

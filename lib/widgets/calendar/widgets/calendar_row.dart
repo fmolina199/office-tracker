@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/widgets/calendar/constants/sizes.dart';
 import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
 import 'package:office_tracker/widgets/calendar/widgets/calendar_tile.dart';
@@ -7,7 +8,7 @@ import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dar
 class CalendarRow extends StatelessWidget {
   final DateTime date;
   final List<int> weekdaysOff;
-  final TrackerHistory<PresenceEnum> presenceHistory;
+  final PresenceHistoryService? presenceHistory;
   final TrackerHistory<DateTime>? holidayHistory;
   final OnClickCallback? onClick;
 
@@ -15,7 +16,7 @@ class CalendarRow extends StatelessWidget {
     super.key,
     required this.date,
     required this.weekdaysOff,
-    required this.presenceHistory,
+    this.presenceHistory,
     this.holidayHistory,
     this.onClick,
   });

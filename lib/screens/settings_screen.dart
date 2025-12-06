@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:office_tracker/constants/menus.dart';
 import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/services/geofance_service.dart';
+import 'package:office_tracker/services/notification_service.dart';
 import 'package:office_tracker/state_management/settings_cubit.dart';
 import 'package:office_tracker/utils/label_utils.dart';
 import 'package:office_tracker/utils/logging_util.dart';
@@ -20,6 +22,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static final _log = LoggingUtil('SettingsScreen');
 
   int? requiredAttendance;
+  List<String> activeGeofence = [];
+  String event = 'Unknown';
+
+  Future<void> _updateRegisteredGeofence() async {
+    final geofenceService = await GeofenceService.instance;
+    final List<String> geofence = await geofenceService.getActiveGeofence();
+    setState(() {
+      activeGeofence = geofence;
+    });
+    _log.debug('Active geofence updated.');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _updateRegisteredGeofence();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +133,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+            Text('Active Geofence: $activeGeofence'),
+            ElevatedButton(
+              onPressed: () async {
+                final geofenceService = await GeofenceService.instance;
+                await geofenceService.createGeofence(
+                    latitude: 53.3885107,
+                    longitude: -6.2581675,
+                );
+                await _updateRegisteredGeofence();
+                final notificationService = await NotificationService.instance;
+                await notificationService.sendNotification(
+                    "Starting bg location", "Location service");
+              },
+              child: Text('Start Background Tracking'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final geofenceService = await GeofenceService.instance;
+                await geofenceService.deleteGeofence();
+                await _updateRegisteredGeofence();
+              },
+              child: Text('Stop Background Tracking'),
+            ),
+            Text('Received event: $event'),
           ],
         ),
       ),

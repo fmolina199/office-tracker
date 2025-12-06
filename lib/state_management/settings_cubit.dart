@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/model/settings.dart';
-import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/services/settings_service.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 

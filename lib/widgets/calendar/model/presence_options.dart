@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:office_tracker/constants/colors.dart';
+import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/widgets/tracker_history/model/tracker_history.dart';
 
 enum PresenceEnum {
@@ -20,15 +21,23 @@ PresenceEnum getPresenceEnumFromString(String str) {
 PresenceEnum getPresenceStatus({
   required DateTime date,
   required List<int> weekdaysOff,
-  required TrackerHistory<PresenceEnum> presenceHistory,
+  PresenceHistoryService? presenceHistory,
   TrackerHistory<DateTime>? holidayHistory,
 }) {
-  if (presenceHistory.isPresent(date)) {
+  if (presenceHistory != null
+      && presenceHistory.isPresent(date)
+  ) {
     return presenceHistory.get(date)!;
   }
 
+  DateTime today = DateTime.now();
+  today = DateTime(
+    today.year,
+    today.month,
+    today.day+1,
+  );
   if (weekdaysOff.contains(date.weekday)
-      || DateTime.now().isBefore(date)
+      || today.isBefore(date)
       || (holidayHistory != null
           && holidayHistory.isPresent(date))
   ) {

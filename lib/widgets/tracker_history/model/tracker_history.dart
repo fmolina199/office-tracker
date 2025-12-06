@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:office_tracker/widgets/tracker_history/model/month_history.dart';
 
 class TrackerHistory<T> {
@@ -53,12 +52,6 @@ class TrackerHistory<T> {
     });
     return trackerHistory;
   }
-
-  @override
-  bool operator ==(Object other) => false;
-
-  @override
-  int get hashCode => Random().nextInt(9999999);
 
   @override
   String toString() {

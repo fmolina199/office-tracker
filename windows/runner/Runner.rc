@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "br.com.fmolina" "\0"
-            VALUE "FileDescription", "office_tracker" "\0"
+            VALUE "FileDescription", "App to track your office attendance" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "office_tracker" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 br.com.fmolina. All rights reserved." "\0"
             VALUE "OriginalFilename", "office_tracker.exe" "\0"
-            VALUE "ProductName", "office_tracker" "\0"
+            VALUE "ProductName", "Office Tracker" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
