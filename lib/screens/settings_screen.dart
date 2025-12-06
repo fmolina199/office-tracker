@@ -136,6 +136,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text('Active Geofence: $activeGeofence'),
             ElevatedButton(
               onPressed: () async {
+                //TODO reset on application load
+                //TODO create settings for geofence location
+                //TODO check how it behaves on iOS
                 final geofenceService = await GeofenceService.instance;
                 await geofenceService.createGeofence(
                     latitude: 53.3885107,
@@ -144,7 +147,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 await _updateRegisteredGeofence();
                 final notificationService = await NotificationService.instance;
                 await notificationService.sendNotification(
-                    "Starting bg location", "Location service");
+                    "Office Tracker",
+                    "Starting background geofence tracking");
               },
               child: Text('Start Background Tracking'),
             ),
@@ -152,6 +156,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () async {
                 final geofenceService = await GeofenceService.instance;
                 await geofenceService.deleteGeofence();
+                final notificationService = await NotificationService.instance;
+                await notificationService.sendNotification(
+                    "Office Tracker",
+                    "Stopping background geofence tracking");
                 await _updateRegisteredGeofence();
               },
               child: Text('Stop Background Tracking'),

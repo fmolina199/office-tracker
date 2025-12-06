@@ -23,7 +23,8 @@ Future<void> geofenceTriggered(GeofenceCallbackParams params) async {
   log.debug('Sending notification');
   final notificationService = await NotificationService.instance;
   await notificationService.sendNotification(
-      "Received some params", "$params");
+      "Welcome to your office",
+      "You one day closer to your required attendance");
 
   // Send information back to application
   log.debug('Loading port');
