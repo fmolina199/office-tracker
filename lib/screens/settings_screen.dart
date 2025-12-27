@@ -1,6 +1,7 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:office_tracker/constants/colors.dart';
 import 'package:office_tracker/constants/menus.dart';
 import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/model/settings.dart';
@@ -22,14 +23,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static final _log = LoggingUtil('SettingsScreen');
 
   int? requiredAttendance;
-  List<String> activeGeofence = [];
+  bool activeGeofence = false;
   String event = 'Unknown';
 
   Future<void> _updateRegisteredGeofence() async {
     final geofenceService = await GeofenceService.instance;
     final List<String> geofence = await geofenceService.getActiveGeofence();
     setState(() {
-      activeGeofence = geofence;
+      activeGeofence = geofence.isNotEmpty;
     });
     _log.debug('Active geofence updated.');
   }
@@ -133,6 +134,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+            Container(height: 2, color: mainColor.shade100),
+            Container(height: 10),
             Text('Active Geofence: $activeGeofence'),
             ElevatedButton(
               onPressed: () async {
@@ -141,8 +144,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 //TODO check how it behaves on iOS
                 final geofenceService = await GeofenceService.instance;
                 await geofenceService.createGeofence(
-                    latitude: 53.3885107,
-                    longitude: -6.2581675,
+                    latitude: 53.3883507,
+                    longitude: -6.2584244,
+                    radiusMeters: 200
                 );
                 await _updateRegisteredGeofence();
                 final notificationService = await NotificationService.instance;
@@ -164,7 +168,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
               child: Text('Stop Background Tracking'),
             ),
-            Text('Received event: $event'),
           ],
         ),
       ),

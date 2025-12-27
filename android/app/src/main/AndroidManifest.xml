@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <application
         android:label="Office Tracker"
         android:name="${applicationName}"
@@ -42,11 +44,19 @@
         <receiver android:name="com.chunkytofustudios.native_geofence.receivers.NativeGeofenceRebootBroadcastReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
         <service android:name="com.chunkytofustudios.native_geofence.NativeGeofenceForegroundService"
-            android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true"/>
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:foregroundServiceType="location"
+            android:exported="true"/>
+
+        <!-- Used by plugin: flutter_geolocator
+        <service android:name="com.baseflow.geolocator.GeolocatorLocationService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:foregroundServiceType="location"
+            android:exported="true"/> -->
 
         <!-- Used by plugin: flutter_local_notifications -->
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />

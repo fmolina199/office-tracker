@@ -14,25 +14,34 @@ Future<void> geofenceTriggered(GeofenceCallbackParams params) async {
   final log = LoggingUtil('geofenceTriggered');
   log.debug('Received parameters: $params');
 
-  // Save information
-  log.debug('Setting presence');
-  final phService = await PresenceHistoryService.instance;
-  await phService.add(DateTime.now(), PresenceEnum.present);
-
-  // Send notification to phone
-  log.debug('Sending notification');
+  log.debug('Sending notification check');
   final notificationService = await NotificationService.instance;
   await notificationService.sendNotification(
-      "Welcome to your office",
-      "You one day closer to your required attendance");
+      "Checking your location",
+      "Received param: ${params.event}");
 
-  // Send information back to application
-  log.debug('Loading port');
-  final SendPort? send = IsolateNameServer
-      .lookupPortByName('native_geofence_send_port');
-  if (send != null) {
-    log.debug('Sending data through port');
-    send.send('${DateTime.now()}');
+  if (params.event == GeofenceEvent.enter
+      || params.event == GeofenceEvent.dwell
+  ) {
+    // Save information
+    log.debug('Setting presence');
+    final phService = await PresenceHistoryService.instance;
+    await phService.add(DateTime.now(), PresenceEnum.present);
+
+    // Send notification to phone
+    log.debug('Sending notification presence');
+    await notificationService.sendNotification(
+        "Welcome to your office",
+        "You one day closer to your required attendance");
+
+    // Send information back to application
+    log.debug('Loading port');
+    final SendPort? send = IsolateNameServer
+        .lookupPortByName('native_geofence_send_port');
+    if (send != null) {
+      log.debug('Sending data through port');
+      send.send('${DateTime.now()}');
+    }
   }
 
   //TODO Wait?! Is this really necessary
@@ -61,6 +70,7 @@ class GeofenceService {
   Future<void> createGeofence({
     required double latitude,
     required double longitude,
+    required double radiusMeters,
   }) async {
     _log.info('Calling createGeofence');
     await _checkPermissions();
@@ -71,7 +81,7 @@ class GeofenceService {
     final geofence = Geofence(
       id: 'geofence',
       location: location,
-      radiusMeters: 200,
+      radiusMeters: radiusMeters,
       triggers: {
         GeofenceEvent.enter,
         GeofenceEvent.exit,
@@ -86,7 +96,7 @@ class GeofenceService {
           GeofenceEvent.exit
         },
         loiteringDelay: const Duration(minutes: 30),
-        notificationResponsiveness: const Duration(minutes: 20),
+        notificationResponsiveness: const Duration(minutes: 5),
       ),
     );
     await NativeGeofenceManager.instance
