@@ -2,51 +2,72 @@ import 'dart:async';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:office_tracker/utils/logging_util.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class GeoPosition {
+  late final DateTime dateTime;
   final double latitude;
   final double longitude;
 
   GeoPosition({
     required this.latitude,
     required this.longitude,
-  });
+  }) {
+    dateTime = DateTime.now();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+      'timestampMillis': dateTime.millisecondsSinceEpoch,
+    };
+  }
+
+  GeoPosition.fromJson(Map<String, dynamic> json)
+      : latitude = json['latitude'] as double,
+        longitude = json['longitude'] as double,
+        dateTime = DateTime.fromMillisecondsSinceEpoch(
+            json['timestampMillis'] as int);
 
   @override
   String toString() {
-    return 'GeoPosition { latitude: $latitude, longitude: $longitude }';
+    return 'GeoPosition { '
+        'latitude: $latitude, '
+        'longitude: $longitude '
+        'dateTime: $dateTime '
+        '}';
   }
 }
 
 class LocationService {
   static final _log = LoggingUtil('LocationService');
 
-  Future<void> _init() async {
-    _log.debug('Calling _init');
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      final errorMessage = 'Location services are disabled.';
-      _log.debug(errorMessage);
-      return Future.error(errorMessage);
+  static Future<void> _checkPermissions() async {
+    _log.debug('Calling _checkPermissions');
+    if (await Permission.location.isPermanentlyDenied
+        || await Permission.locationAlways.isPermanentlyDenied
+    ) {
+      return Future.error("Please manually update location permissions");
     }
 
-    final permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      final requestPermission = await Geolocator.requestPermission();
-      if (requestPermission == LocationPermission.denied) {
-        final errorMessage = 'Location permissions are denied';
-        _log.debug(errorMessage);
-        return Future.error(errorMessage);
+    if (await Permission.location.isDenied) {
+      final result = await Permission.location.request();
+      if (result.isDenied) {
+        return Future.error("Request for location was denied");
       }
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      final errorMessage = 'Location permissions are permanently denied,'
-          ' we cannot request permissions.';
-      _log.debug(errorMessage);
-      return Future.error(errorMessage);
+    if (await Permission.locationAlways.isDenied) {
+      final result = await Permission.locationAlways.request();
+      if (result.isDenied) {
+        return Future.error("Request for locationAlways was denied");
+      }
     }
+  }
+
+  Future<void> _init() async {
+    await _checkPermissions();
   }
 
   Future<GeoPosition> getLocation() async {

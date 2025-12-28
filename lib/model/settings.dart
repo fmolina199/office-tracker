@@ -1,3 +1,5 @@
+import 'package:office_tracker/services/location_service.dart';
+
 class Settings {
   static const defaultReportSize = 3;
   static const defaultStartMonth = DateTime.january;
@@ -10,7 +12,11 @@ class Settings {
   final int firstWeekday;
   final int requiredAttendance;
   final List<int> weekdaysOff;
-  final bool backgroundTaskEnabled;
+  final bool foregroundTaskEnabled;
+  //TODO create necessary class structure for those attributes
+  final double distance = 50;
+  final GeoPosition position = GeoPosition(
+      latitude: 53.3885205, longitude: -6.2581135);
 
   Settings({
     this.reportMonthSize = defaultReportSize,
@@ -18,7 +24,7 @@ class Settings {
     this.firstWeekday = defaultFirstWeekday,
     this.requiredAttendance = defaultRequiredAttendance,
     this.weekdaysOff = defaultWeekdaysOff,
-    this.backgroundTaskEnabled = false,
+    this.foregroundTaskEnabled = false,
   }) : assert(1 <= reportMonthSize && reportMonthSize <= DateTime.monthsPerYear),
         assert(1 <= reportStartMonth && reportStartMonth <= DateTime.monthsPerYear),
         assert(0 <= requiredAttendance && requiredAttendance <= 100),
@@ -31,7 +37,7 @@ class Settings {
       'firstWeekday': firstWeekday,
       'requiredAttendance': requiredAttendance,
       'weekdaysOff': weekdaysOff,
-      'backgroundTaskEnabled': backgroundTaskEnabled,
+      'foregroundTaskEnabled': foregroundTaskEnabled,
     };
   }
 
@@ -41,7 +47,7 @@ class Settings {
         firstWeekday = json['firstWeekday'] as int,
         requiredAttendance = json['requiredAttendance'] as int,
         weekdaysOff = json['weekdaysOff'].cast<int>(),
-        backgroundTaskEnabled = json['backgroundTaskEnabled'] as bool;
+        foregroundTaskEnabled = json['foregroundTaskEnabled'] as bool;
 
   Settings copyWith({
     int? reportMonthSize,
@@ -49,7 +55,7 @@ class Settings {
     int? firstWeekday,
     int? requiredAttendance,
     List<int>? weekdaysOff,
-    bool? backgroundTaskEnabled,
+    bool? foregroundTaskEnabled,
   }) {
     return Settings(
       reportMonthSize: reportMonthSize ?? this.reportMonthSize,
@@ -57,7 +63,7 @@ class Settings {
       firstWeekday: firstWeekday ?? this.firstWeekday,
       requiredAttendance: requiredAttendance ?? this.requiredAttendance,
       weekdaysOff: weekdaysOff ?? this.weekdaysOff,
-      backgroundTaskEnabled: backgroundTaskEnabled ?? this.backgroundTaskEnabled,
+      foregroundTaskEnabled: foregroundTaskEnabled ?? this.foregroundTaskEnabled,
     );
   }
 
@@ -69,7 +75,7 @@ class Settings {
         'firstWeekday: $firstWeekday, '
         'requiredAttendance: $requiredAttendance '
         'weekdaysOff: $weekdaysOff '
-        'backgroundTaskEnabled: $backgroundTaskEnabled '
+        'foregroundTaskEnabled: $foregroundTaskEnabled '
         '}';
   }
 }

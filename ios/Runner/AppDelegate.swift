@@ -1,6 +1,5 @@
 import Flutter
 import UIKit
-import native_geofence
 import flutter_local_notifications
 
 @main
@@ -14,11 +13,6 @@ import flutter_local_notifications
     // Flutter Notification Plugin
     FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
       GeneratedPluginRegistrant.register(with: registry)
-    }
-
-    // Used by plugin: native_geofence
-    NativeGeofencePlugin.setPluginRegistrantCallback { registry in
-        GeneratedPluginRegistrant.register(with: registry)
     }
 
     if #available(iOS 10.0, *) {

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:office_tracker/screens/calendar_screen.dart';
 import 'package:office_tracker/screens/report_screen.dart';
 import 'package:office_tracker/screens/settings_screen.dart';
-import 'package:office_tracker/services/geofance_service.dart';
+import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 
@@ -22,6 +25,63 @@ class _HomeScreenState extends State<HomeScreen> {
     'Settings',
   ];
 
+  void _onReceiveTaskData(Object data) {
+    _log.info("Calling _onReceiveTaskData");
+    if (data is Map<String, dynamic>) {
+      var position = GeoPosition.fromJson(data);
+      _log.debug("Received: $position");
+
+      Future.delayed(Duration.zero, () async {
+        _log.debug('Reloading presence history from file');
+        final phService = await PresenceHistoryService.instance;
+        await phService.reloadFromFile();
+      });
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    _log.info("Calling _requestPermissions");
+    final NotificationPermission notificationPermission =
+        await FlutterForegroundTask.checkNotificationPermission();
+    if (notificationPermission != NotificationPermission.granted) {
+      await FlutterForegroundTask.requestNotificationPermission();
+    }
+
+    if (Platform.isAndroid) {
+      if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
+        await FlutterForegroundTask.requestIgnoreBatteryOptimization();
+      }
+
+      if (!await FlutterForegroundTask.canScheduleExactAlarms) {
+        await FlutterForegroundTask.openAlarmsAndRemindersSettings();
+      }
+    }
+  }
+
+  void _initService() {
+    _log.info("Calling _initService");
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'foreground_service',
+        channelName: 'Foreground Service Notification',
+        channelDescription:
+        'This notification appears when the foreground service is running.',
+        onlyAlertOnce: true,
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: false,
+        playSound: false,
+      ),
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.repeat(1_200_000),
+        autoRunOnBoot: true,
+        autoRunOnMyPackageReplaced: true,
+        allowWakeLock: true,
+        allowWifiLock: true,
+      ),
+    );
+  }
+
   var _selectedIndex = 0;
   final List<Widget> _widgets = <Widget>[
     CalendarScreen(),
@@ -32,14 +92,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () async {
-      final geofenceService = await GeofenceService.instance;
-      geofenceService.setCallback((message) async {
-        _log.debug("Reloading presence history from file");
-        final phService = await PresenceHistoryService.instance;
-        await phService.reloadFromFile();
-      });
+    FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
+    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) async {
+      _log.info("Calling addTaskDataCallback");
+      await _requestPermissions();
+      _initService();
     });
+  }
+
+  @override
+  void dispose() {
+    FlutterForegroundTask.removeTaskDataCallback(_onReceiveTaskData);
+    super.dispose();
   }
 
   @override

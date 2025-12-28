@@ -1,16 +1,22 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:office_tracker/constants/colors.dart';
 import 'package:office_tracker/constants/menus.dart';
 import 'package:office_tracker/constants/sizes.dart';
+import 'package:office_tracker/handlers/location_handler.dart';
 import 'package:office_tracker/model/settings.dart';
-import 'package:office_tracker/services/geofance_service.dart';
-import 'package:office_tracker/services/notification_service.dart';
+import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/state_management/settings_cubit.dart';
 import 'package:office_tracker/utils/label_utils.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 import 'package:office_tracker/widgets/forms/inputs/labeled_menu.dart';
+
+@pragma('vm:entry-point')
+void startCallback() {
+  FlutterForegroundTask.setTaskHandler(LocationHandler());
+}
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -23,22 +29,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static final _log = LoggingUtil('SettingsScreen');
 
   int? requiredAttendance;
-  bool activeGeofence = false;
-  String event = 'Unknown';
+  bool isForegroundServiceRunning = false;
 
-  Future<void> _updateRegisteredGeofence() async {
-    final geofenceService = await GeofenceService.instance;
-    final List<String> geofence = await geofenceService.getActiveGeofence();
-    setState(() {
-      activeGeofence = geofence.isNotEmpty;
+  void _updateForegroundServiceStatus() {
+    Future.delayed(Duration.zero, () async {
+      final isRunning = await FlutterForegroundTask.isRunningService;
+      setState(() {
+        isForegroundServiceRunning = isRunning;
+      });
     });
-    _log.debug('Active geofence updated.');
   }
 
   @override
   void initState() {
     super.initState();
-    _updateRegisteredGeofence();
+    _updateForegroundServiceStatus();
   }
 
   @override
@@ -53,6 +58,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final int reportStartingMonth = settings.reportStartMonth;
     final int calendarFirstWeekday = settings.firstWeekday;
     final List<int> weekdaysOff = settings.weekdaysOff;
+
+    final startStoButton = isForegroundServiceRunning
+        ? ElevatedButton(
+          onPressed: () async {
+            _log.info("Stopping foreground service");
+            await FlutterForegroundTask.stopService();
+          },
+          child: Text('Stop GPS Tracking'),
+        )
+        : ElevatedButton(
+          onPressed: () async {
+            _log.info("Starting foreground service");
+            // Make sure location permissions are granted
+            await LocationService.instance;
+
+            // Start foreground service
+            final ServiceRequestResult result = await FlutterForegroundTask
+                .startService(
+                  serviceId: 200,
+                  notificationTitle: 'Office Tracker',
+                  notificationText: 'Starting GPS tracking',
+                  callback: startCallback,
+                );
+
+            if (result is ServiceRequestFailure) {
+              _log.error("ServiceRequestFailure when foreground task init");
+              throw result.error;
+            }
+          },
+          child: Text('Start GPS Tracking'),
+        );
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -136,38 +172,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             Container(height: 2, color: mainColor.shade100),
             Container(height: 10),
-            Text('Active Geofence: $activeGeofence'),
-            ElevatedButton(
-              onPressed: () async {
-                //TODO reset on application load
-                //TODO create settings for geofence location
-                //TODO check how it behaves on iOS
-                final geofenceService = await GeofenceService.instance;
-                await geofenceService.createGeofence(
-                    latitude: 53.3883507,
-                    longitude: -6.2584244,
-                    radiusMeters: 200
-                );
-                await _updateRegisteredGeofence();
-                final notificationService = await NotificationService.instance;
-                await notificationService.sendNotification(
-                    "Office Tracker",
-                    "Starting background geofence tracking");
-              },
-              child: Text('Start Background Tracking'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final geofenceService = await GeofenceService.instance;
-                await geofenceService.deleteGeofence();
-                final notificationService = await NotificationService.instance;
-                await notificationService.sendNotification(
-                    "Office Tracker",
-                    "Stopping background geofence tracking");
-                await _updateRegisteredGeofence();
-              },
-              child: Text('Stop Background Tracking'),
-            ),
+            startStoButton,
           ],
         ),
       ),
