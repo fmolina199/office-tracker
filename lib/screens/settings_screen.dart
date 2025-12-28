@@ -5,18 +5,13 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:office_tracker/constants/colors.dart';
 import 'package:office_tracker/constants/menus.dart';
 import 'package:office_tracker/constants/sizes.dart';
-import 'package:office_tracker/handlers/location_handler.dart';
 import 'package:office_tracker/model/settings.dart';
+import 'package:office_tracker/services/foreground_task_service.dart';
 import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/state_management/settings_cubit.dart';
 import 'package:office_tracker/utils/label_utils.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 import 'package:office_tracker/widgets/forms/inputs/labeled_menu.dart';
-
-@pragma('vm:entry-point')
-void startCallback() {
-  FlutterForegroundTask.setTaskHandler(LocationHandler());
-}
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -63,29 +58,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ? ElevatedButton(
           onPressed: () async {
             _log.info("Stopping foreground service");
-            await FlutterForegroundTask.stopService();
+            final foregroundService = await ForegroundTaskService.instance;
+            await foregroundService.stopService();
           },
           child: Text('Stop GPS Tracking'),
         )
         : ElevatedButton(
           onPressed: () async {
             _log.info("Starting foreground service");
+
             // Make sure location permissions are granted
             await LocationService.instance;
 
-            // Start foreground service
-            final ServiceRequestResult result = await FlutterForegroundTask
-                .startService(
-                  serviceId: 200,
-                  notificationTitle: 'Office Tracker',
-                  notificationText: 'Starting GPS tracking',
-                  callback: startCallback,
-                );
-
-            if (result is ServiceRequestFailure) {
-              _log.error("ServiceRequestFailure when foreground task init");
-              throw result.error;
-            }
+            // Start Foreground service
+            final foregroundService = await ForegroundTaskService.instance;
+            await foregroundService.startService();
           },
           child: Text('Start GPS Tracking'),
         );

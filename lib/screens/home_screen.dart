@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:office_tracker/screens/calendar_screen.dart';
@@ -17,14 +15,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // Static Properties
   static final _log = LoggingUtil('_HomeScreenState');
-  
   static final _titles = [
     'Calendar',
     'Reports',
     'Settings',
   ];
 
+  // Properties
+  var _selectedIndex = 0;
+  final List<Widget> _widgets = <Widget>[
+    CalendarScreen(),
+    ReportScreen(),
+    SettingsScreen(),
+  ];
+
+  // Called when foreground service update location
   void _onReceiveTaskData(Object data) {
     _log.info("Calling _onReceiveTaskData");
     if (data is Map<String, dynamic>) {
@@ -39,65 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _requestPermissions() async {
-    _log.info("Calling _requestPermissions");
-    final NotificationPermission notificationPermission =
-        await FlutterForegroundTask.checkNotificationPermission();
-    if (notificationPermission != NotificationPermission.granted) {
-      await FlutterForegroundTask.requestNotificationPermission();
-    }
-
-    if (Platform.isAndroid) {
-      if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
-        await FlutterForegroundTask.requestIgnoreBatteryOptimization();
-      }
-
-      if (!await FlutterForegroundTask.canScheduleExactAlarms) {
-        await FlutterForegroundTask.openAlarmsAndRemindersSettings();
-      }
-    }
-  }
-
-  void _initService() {
-    _log.info("Calling _initService");
-    FlutterForegroundTask.init(
-      androidNotificationOptions: AndroidNotificationOptions(
-        channelId: 'foreground_service',
-        channelName: 'Foreground Service Notification',
-        channelDescription:
-        'This notification appears when the foreground service is running.',
-        onlyAlertOnce: true,
-      ),
-      iosNotificationOptions: const IOSNotificationOptions(
-        showNotification: false,
-        playSound: false,
-      ),
-      foregroundTaskOptions: ForegroundTaskOptions(
-        eventAction: ForegroundTaskEventAction.repeat(1_200_000),
-        autoRunOnBoot: true,
-        autoRunOnMyPackageReplaced: true,
-        allowWakeLock: true,
-        allowWifiLock: true,
-      ),
-    );
-  }
-
-  var _selectedIndex = 0;
-  final List<Widget> _widgets = <Widget>[
-    CalendarScreen(),
-    ReportScreen(),
-    SettingsScreen(),
-  ];
-
   @override
   void initState() {
     super.initState();
     FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
-    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) async {
-      _log.info("Calling addTaskDataCallback");
-      await _requestPermissions();
-      _initService();
-    });
   }
 
   @override
