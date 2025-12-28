@@ -24,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static final _log = LoggingUtil('SettingsScreen');
 
   int? requiredAttendance;
+  double? distanceMeters;
   bool isForegroundServiceRunning = false;
 
   void _updateForegroundServiceStatus() {
@@ -49,6 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _log.debug('Settings: $settings');
 
     requiredAttendance ??= settings.requiredAttendance;
+    distanceMeters ??= settings.distanceMeters;
     final int reportSize = settings.reportMonthSize;
     final int reportStartingMonth = settings.reportStartMonth;
     final int calendarFirstWeekday = settings.firstWeekday;
@@ -144,7 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: requiredAttendance!.toDouble(),
                 max: 100,
                 min: 0,
-                label: 'Label',
+                label: 'Attendance',
                 onChanged: (newValue) {
                   setState(() {
                     requiredAttendance = newValue.toInt();
@@ -159,6 +161,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             Container(height: 2, color: mainColor.shade100),
             Container(height: 10),
+            LabeledMenu(
+              text: 'Distance (${distanceMeters?.toInt()}m):',
+              child: Slider(
+                value: distanceMeters!,
+                max: 1000,
+                min: 50,
+                label: 'Distance',
+                onChanged: (newValue) {
+                  setState(() {
+                    distanceMeters = newValue.roundToDouble();
+                  });
+                },
+                onChangeEnd: (newValue) => context.read<SettingsCubit>().set(
+                    settings.copyWith(
+                        distanceMeters: newValue.roundToDouble()
+                    )
+                ),
+              ),
+            ),
             startStoButton,
           ],
         ),

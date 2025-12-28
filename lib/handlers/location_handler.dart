@@ -32,7 +32,7 @@ class LocationHandler extends TaskHandler {
       // Load settings
       final settingsService = await SettingsService.instance;
       final expectedPosition = settingsService.settings.position;
-      final maxDistance = settingsService.settings.distance;
+      final maxDistance = settingsService.settings.distanceMeters;
 
       // Calculate distance from expected position
       final distance = GeoMathUtils.distanceInMeters(
