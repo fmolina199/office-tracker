@@ -5,6 +5,7 @@ import 'package:office_tracker/services/presence_history_service.dart';
 import 'package:office_tracker/services/settings_service.dart';
 import 'package:office_tracker/utils/geo_math_utils.dart';
 import 'package:office_tracker/utils/logging_util.dart';
+import 'package:office_tracker/utils/platform_utils.dart';
 import 'package:office_tracker/widgets/calendar/model/presence_options.dart';
 
 class LocationHandler extends TaskHandler {
@@ -16,14 +17,10 @@ class LocationHandler extends TaskHandler {
     _log.info('onStart(starter: ${starter.name})');
   }
 
-  // Called based on the eventAction set in ForegroundTaskOptions.
-  @override
-  void onRepeatEvent(DateTime timestamp) {
-    // Send data to main isolate.
-    _log.info('onRepeatEvent($timestamp)');
-    Future.delayed(Duration.zero, () async {
-      _log.debug('onRepeatEvent starting delayed task');
+  static Future<void> process(DateTime timestamp) async {
+    _log.debug('onRepeatEvent starting delayed task');
 
+    try {
       // Get Current location
       final locationService = await LocationService.instance;
       final position = await locationService.getLocation();
@@ -54,14 +51,28 @@ class LocationHandler extends TaskHandler {
       // If day hasn't a mark, set it to present
       await phService.add(timestamp, PresenceEnum.present);
 
-      // Send notification to phone
-      _log.debug('onRepeatEvent Sending notification presence');
-      final notificationService = await NotificationService.instance;
-      await notificationService.sendNotification(
-          "Welcome to your office",
-          "You one day closer to your required attendance");
-
+      if (PlatformUtils.isMobile) {
+        //TODO check why notification is not working
+        // Send notification to phone
+        _log.debug('onRepeatEvent Sending notification presence');
+        final notificationService = await NotificationService.instance;
+        await notificationService.sendNotification(
+            "Welcome to your office",
+            "You one day closer to your required attendance");
+      }
       FlutterForegroundTask.sendDataToMain(position.toJson());
+    } catch (exp) {
+      _log.error("Found exception: $exp");
+    }
+  }
+
+  // Called based on the eventAction set in ForegroundTaskOptions.
+  @override
+  void onRepeatEvent(DateTime timestamp) {
+    // Send data to main isolate.
+    _log.info('onRepeatEvent($timestamp)');
+    Future.delayed(Duration.zero, () async {
+      process(timestamp);
     });
   }
 

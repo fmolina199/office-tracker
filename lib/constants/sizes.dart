@@ -12,3 +12,7 @@ const inputFlexValue = 5;
 /// Time
 const halfSecondDuration = Duration(milliseconds: 500);
 const oneSecondDuration = Duration(seconds: 1);
+
+// Location Check interval
+const delayLocationCheckInMilli = 5_000; //1_200_000;
+const delayLocationDuration = Duration(milliseconds: delayLocationCheckInMilli);

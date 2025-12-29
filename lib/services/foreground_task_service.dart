@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/handlers/location_handler.dart';
 import 'package:office_tracker/utils/logging_util.dart';
 
@@ -47,7 +48,8 @@ class ForegroundTaskService {
         playSound: false,
       ),
       foregroundTaskOptions: ForegroundTaskOptions(
-        eventAction: ForegroundTaskEventAction.repeat(1_200_000),
+        eventAction: ForegroundTaskEventAction
+            .repeat(delayLocationCheckInMilli),
         autoRunOnBoot: true,
         autoRunOnMyPackageReplaced: true,
         allowWakeLock: true,
