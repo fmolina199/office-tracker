@@ -64,6 +64,12 @@ class ForegroundTaskService {
   }
 
   Future<void> startService() async {
+    final isRunning = await FlutterForegroundTask.isRunningService;
+    if (isRunning) {
+      _log.warn("FlutterForegroundTask is already running");
+      return;
+    }
+
     // Start foreground service
     final ServiceRequestResult result = await FlutterForegroundTask
         .startService(

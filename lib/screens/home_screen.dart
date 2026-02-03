@@ -1,11 +1,19 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:office_tracker/constants/sizes.dart';
 import 'package:office_tracker/screens/calendar_screen.dart';
 import 'package:office_tracker/screens/report_screen.dart';
 import 'package:office_tracker/screens/settings_screen.dart';
+import 'package:office_tracker/services/foreground_task_service.dart';
 import 'package:office_tracker/services/location_service.dart';
 import 'package:office_tracker/services/presence_history_service.dart';
+import 'package:office_tracker/state_management/settings_cubit.dart';
 import 'package:office_tracker/utils/logging_util.dart';
+import 'package:office_tracker/utils/platform_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,10 +54,38 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _startForegroundService() async {
+    if (!context.mounted) {
+      _log.warn("_startForegroundService: context not mounted");
+      return;
+    }
+
+    final settings = context.read<SettingsCubit>().state;
+    if (!settings.foregroundTaskEnabled) {
+      _log.warn("_startForegroundService: foreground task disabled");
+      return;
+    }
+
+    if (PlatformUtils.isMobile) {
+      _log.warn("_startForegroundService: starting mobile foreground service");
+      final foregroundService = await ForegroundTaskService.instance;
+      await foregroundService.startService();
+    } else {
+      _log.warn("_startForegroundService: starting isolate foreground service");
+      final rootIsolateToken = RootIsolateToken.instance!;
+      Isolate.spawn(isolateMain, rootIsolateToken);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
+
+    // Read settings to init cubit, the settings will take 0.5s to be loaded
+    // After it's loaded we can call _startForegroundService
+    context.read<SettingsCubit>().state;
+    Future.delayed(oneSecondDuration, _startForegroundService);
   }
 
   @override

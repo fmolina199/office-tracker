@@ -21,7 +21,7 @@ import 'package:office_tracker/utils/platform_utils.dart';
 import 'package:office_tracker/widgets/forms/inputs/labeled_menu.dart';
 
 final _sPortName = 'office_tracker/cancel_port';
-Future<void> _isolateMain(RootIsolateToken rootIsolateToken) async {
+Future<void> isolateMain(RootIsolateToken rootIsolateToken) async {
   final log = LoggingUtil('_isolateMain');
   log.info('Start workerManager task');
   BackgroundIsolateBinaryMessenger
@@ -64,6 +64,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double? distanceMeters;
   bool isForegroundServiceRunning = false;
 
+  Future<void> _stopForegroundService(Settings settings) async {
+    _log.info("Stopping foreground service");
+    if (PlatformUtils.isMobile) {
+      final foregroundService = await ForegroundTaskService.instance;
+      await foregroundService.stopService();
+    } else {
+      final SendPort? sendPort = IsolateNameServer
+          .lookupPortByName(_sPortName);
+      sendPort?.send(false);
+    }
+
+    // Update screen
+    if (context.mounted) {
+      context.read<SettingsCubit>().set(
+          settings.copyWith(
+            foregroundTaskEnabled: false,
+          )
+      );
+    }
+  }
+
+  Future<void> _startForegroundService(Settings settings) async {
+    _log.info("Starting foreground service");
+
+    // Make sure location permissions are granted
+    await LocationService.instance;
+
+    // Start Foreground service
+    if (PlatformUtils.isMobile) {
+      final foregroundService = await ForegroundTaskService.instance;
+      await foregroundService.startService();
+    } else {
+      final rootIsolateToken = RootIsolateToken.instance!;
+      Isolate.spawn(isolateMain, rootIsolateToken);
+    }
+
+    // Update screen
+    if (context.mounted) {
+      context.read<SettingsCubit>().set(
+          settings.copyWith(
+            foregroundTaskEnabled: true,
+          )
+      );
+    }
+  }
+
   void _updateForegroundServiceStatus() {
     if (PlatformUtils.isMobile) {
       Future.delayed(Duration.zero, () async {
@@ -97,57 +143,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final GeoPosition? position = settings.position;
 
     final startStoButton = (isForegroundServiceRunning
-          || settings.foregroundTaskEnabled
-        ) ? ElevatedButton(
-            onPressed: () async {
-              _log.info("Stopping foreground service");
-              if (PlatformUtils.isMobile) {
-                final foregroundService = await ForegroundTaskService.instance;
-                await foregroundService.stopService();
-              } else {
-                final SendPort? sendPort = IsolateNameServer
-                    .lookupPortByName(_sPortName);
-                sendPort?.send(false);
-              }
+          || settings.foregroundTaskEnabled)
+        ? ElevatedButton(
+          onPressed: () async {
+            await _stopForegroundService(settings);
+          },
+          child: Text('Stop GPS Tracking'),
+        )
+        : ElevatedButton(
+          onPressed: () async {
+           await _startForegroundService(settings);
+          },
+          child: Text('Start GPS Tracking'),
+        );
 
-              // Update screen
-              if (context.mounted) {
-                context.read<SettingsCubit>().set(
-                    settings.copyWith(
-                      foregroundTaskEnabled: false,
-                    )
-                );
-              }
-            },
-            child: Text('Stop GPS Tracking'),
-          )
-          : ElevatedButton(
-            onPressed: () async {
-              _log.info("Starting foreground service");
-
-              // Make sure location permissions are granted
-              await LocationService.instance;
-
-              // Start Foreground service
-              if (PlatformUtils.isMobile) {
-                final foregroundService = await ForegroundTaskService.instance;
-                await foregroundService.startService();
-              } else {
-                final rootIsolateToken = RootIsolateToken.instance!;
-                Isolate.spawn(_isolateMain, rootIsolateToken);
-              }
-
-              // Update screen
-              if (context.mounted) {
-                context.read<SettingsCubit>().set(
-                    settings.copyWith(
-                      foregroundTaskEnabled: true,
-                    )
-                );
-              }
-            },
-            child: Text('Start GPS Tracking'),
-          );
+    final currentLocationButton = (isForegroundServiceRunning
+          || settings.foregroundTaskEnabled)
+      ? Container()
+      : ElevatedButton(
+        onPressed: () async {
+          final locationService = await LocationService.instance;
+          sleep(halfSecondDuration);
+          final position = await locationService.getLocation();
+          if (context.mounted) {
+            context.read<SettingsCubit>().set(
+              settings.copyWith(
+                position: position,
+              )
+            );
+          }
+        },
+        child: Text('Set to Current Location')
+      );
 
     return SingleChildScrollView(
       child: ConstrainedBox(
@@ -259,22 +286,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 text: 'Longitude:',
                 child: Text('${position?.longitude ?? 'Not set'}'),
               ),
-              ElevatedButton(
-                  onPressed: () async {
-                    final locationService = await LocationService.instance;
-                    sleep(oneSecondDuration);
-                    final position = await locationService.getLocation();
-                    if (context.mounted) {
-                      context.read<SettingsCubit>().set(
-                          settings.copyWith(
-                              position: position,
-                          )
-                      );
-                    }
-                  },
-                  child: Text('Set to Current Location')
-              ),
               startStoButton,
+              currentLocationButton,
             ],
           ),
         ),
